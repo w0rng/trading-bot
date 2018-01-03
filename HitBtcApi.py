@@ -21,3 +21,6 @@ def CreateOrders(keys, symbol, side, quantity, price):
 
 def GetTickers():
 	return session.get('https://api.hitbtc.com/api/2/public/ticker').json()
+
+def GetInfoSumbols(symbol):
+	return session.get('https://api.hitbtc.com/api/2/public/symbol/'+symbol).json()

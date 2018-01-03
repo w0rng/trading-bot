@@ -24,6 +24,6 @@ def GetTickers():
 	for Ticker in AllTicker:
 		if (Ticker['bid'] != None) and (float(Ticker['bid']) + float(Ticker['bid']) * (Config.StockFee * 2 + Config.Profit)) >= float(Ticker['ask']):
 			rank = (float(Ticker['ask']) - float(Ticker['bid']))/float(Ticker['bid'])*float(Ticker['volumeQuote'])
-			temp = [float(Ticker['bid']), float(Ticker['ask']), Ticker['symbol'], rank]
+			temp = [Ticker['symbol'], float(Ticker['bid']), float(Ticker['ask']), rank]
 			Traded.append(temp)
-			print(temp)
+	return Traded

@@ -13,3 +13,5 @@ Balance = []
 MainBalance = 0
 
 MaxPrice = 0
+
+TradedCurrency = []
