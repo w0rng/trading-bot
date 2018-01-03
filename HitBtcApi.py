@@ -17,4 +17,7 @@ def CancelOrders(keys, clientOrderId):
 def CreateOrders(keys, symbol, side, quantity, price):
     session.auth = (keys[0], keys[1])
     orderData = {'symbol': symbol, 'side': side, 'quantity': quantity, 'price': price}
-    r = session.post('https://api.hitbtc.com/api/2/order', data = orderData)
+    session.post('https://api.hitbtc.com/api/2/order', data = orderData)
+
+def GetTickers():
+	return session.get('https://api.hitbtc.com/api/2/public/ticker').json()

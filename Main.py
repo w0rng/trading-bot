@@ -10,11 +10,12 @@ keys = [Config.PublicKey, Config.SecretKey]
 
 def main():
 	while True:
-		do.CancelOrders(keys, inf.GetAllOrders(keys))
-		Config.Balance = inf.GetNotZeroBalances(keys, Config.QuotedCurrency)
-		Config.MainBalance = inf.GetMainBalance(keys, Config.QuotedCurrency)
+		#do.CancelOrders(keys, inf.GetAllOrders(keys))
+		#Config.Balance = inf.GetNotZeroBalances(keys, Config.QuotedCurrency)
+		#Config.MainBalance = inf.GetMainBalance(keys, Config.QuotedCurrency)
+		#Config.MaxPrice = Config.MainBalance / Config.Quantity
 
-		print(Config.MainBalance)
+		GetInformations.GetTickers()
 
 		time.sleep(10)
 

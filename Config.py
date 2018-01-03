@@ -10,6 +10,6 @@ StockFee = 0.01
 Period = 120 #120 минут
 
 Balance = []
-MainBalance = []
+MainBalance = 0
 
 MaxPrice = 0
