@@ -4,14 +4,18 @@ import GetInformations
 import do
 import time
 
+maxPrice = 0
 inf = GetInformations
 keys = [Config.PublicKey, Config.SecretKey]
+
 def main():
 	while True:
-		orders = inf.GetAllOrders(keys)
-		print(orders)
-		do.CancelOrders(keys, orders)
-		#balance = inf.GetNotZeroBalances([Config.PublicKey, Config.SecretKey], Config.QuotedCurrency)
+		do.CancelOrders(keys, inf.GetAllOrders(keys))
+		Config.Balance = inf.GetNotZeroBalances(keys, Config.QuotedCurrency)
+		Config.MainBalance = inf.GetMainBalance(keys, Config.QuotedCurrency)
+
+		print(Config.MainBalance)
+
 		time.sleep(10)
 
 if __name__ == '__main__':
