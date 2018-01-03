@@ -11,3 +11,5 @@ Period = 120 #120 минут
 
 Balance = []
 MainBalance = []
+
+MaxPrice = 0
