@@ -1,0 +1,8 @@
+#файлы созданные автоматически
+__pycache__/
+Main.pyc
+
+#настройки проекта sublime
+SublimeText/
+
+statistics
