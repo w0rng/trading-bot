@@ -24,3 +24,6 @@ def GetTickers():
 
 def GetInfoSumbols(symbol):
 	return session.get('https://api.hitbtc.com/api/2/public/symbol/'+symbol).json()
+
+def GetCandles(symbol, limit):
+	return session.get('https://api.hitbtc.com/api/2/public/candles/'+symbol+'?limit='+str(limit)+'&period=M1').json()

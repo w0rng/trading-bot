@@ -11,7 +11,7 @@ def GetNotZeroBalances(keys, quotedCurrency):
 	allBalance = HitBtcApi.GetBalance(keys, quotedCurrency)
 	notZeroBalance = []
 	for balance in allBalance:
-		if (balance['available'] != '0') and (balance['currency'] != quotedCurrency):
+		if ((balance['available'] != '0') or (balance['reserved'] != '0')) and (balance['currency'] != quotedCurrency):
 			notZeroBalance.append(balance)
 	return notZeroBalance
 
@@ -26,4 +26,5 @@ def GetTickers():
 			rank = (float(Ticker['ask']) - float(Ticker['bid']))/float(Ticker['bid'])*float(Ticker['volumeQuote'])
 			temp = [Ticker['symbol'], float(Ticker['bid']), float(Ticker['ask']), rank]
 			Traded.append(temp)
+	Traded.sort(reverse=True, key=lambda t: t[3])
 	return Traded
