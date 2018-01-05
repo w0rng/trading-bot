@@ -8,26 +8,25 @@ def SortedOrders(keys, orders):
 	Config.Orders.clear()
 	for order in orders:
 		if order['side'] == 'buy':
+			temp = Config.TradedCurrency
+			for currency in temp:
+				if(order['symbol'] == currency.symbol):
+					temp.remove(currency)
 			HitBtcApi.CancelOrders(keys, order['clientOrderId'])
-		else:
-			Config.Orders.append(order)
+			Config.TradedCurrency = temp
 
 def SortCurrencyTraded():
 	a = Config.TradedCurrency
-	i = 0
-	while i < len(a):
-		if (a[i][3] < 0.5) or (float(HitBtcApi.GetInfoSumbols(a[i][0])['quantityIncrement']) > Config.MaxPrice / float(a[i][1])) or (a[i][0].find(Config.QuotedCurrency) == -1):
-			del a[i]
-		else:
-			i += 1
+	for currency in a:
+		if ((currency.rank < 0.5) #если маленький ранг
+		or (currency.quantityIncrement > Config.MaxPrice / currency.bid)): #если на можем позволить минимум
+			a.remove(currency)
 	Config.TradedCurrency = a
-
 
 def RemoveBadTradedCurrency():
 	currencys = Config.TradedCurrency
-	tempCurrencys = []
 	for currency in currencys:
-		temp = HitBtcApi.GetCandles(currency[0], Config.Period)
+		temp = HitBtcApi.GetCandles(currency.symbol, Config.Period)
 		x = []
 		y = []
 		i = 0
@@ -37,7 +36,19 @@ def RemoveBadTradedCurrency():
 			i += 1
 		regr = linear_model.LinearRegression()
 		regr.fit(x, y)
-		if Logics.should_buy(temp): 
-			if atan(regr.score(x, y)) * currency[3] > 500:
-				tempCurrencys.append(currency)
-	Config.TradedCurrency = tempCurrencys
+		if not Logics.should_buy(temp): 
+			if atan(regr.score(x, y)) * currency.rank <= 500:
+				currencys.remove(currency)
+	Config.TradedCurrency = currency
+
+def RemovalAvailableCurrencies():
+	orders = Config.orders
+	currencys = Config.TradedCurrency
+
+	for currency in currencys:
+		for order in orders:
+			if currency.symbol == order['symbol']:
+				currencys.remove(currency)
+	Config.TradedCurrency = currency
+
+#def SellCurrencys():
