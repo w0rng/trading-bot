@@ -10,11 +10,11 @@ def SortedOrders(keys, orders):
 	purchasedCurrencies = currencys
 	for order in orders:
 		if order['side'] == 'buy':
-			for currency in currencys:
-				print(currency.symbol, order['symbol'])
-				if currency.symbol == order['symbol']:
-					purchasedCurrencies.remove(currency)
-					break
+			print(order['side'])
+			#for currency in currencys:
+			#	if currency.symbol == order['symbol']:
+			#		purchasedCurrencies.remove(currency)
+			#		break
 			HitBtcApi.CancelOrders(keys, order['clientOrderId'])
 	Config.TradedCurrency = purchasedCurrencies
 
@@ -49,17 +49,22 @@ def RemoveCurencyFallingMarket():
 def SellCurrencys(keys):
 	currencys = Config.TradedCurrency
 	for currency in currencys:
-		print("SELL ", currency.quantity, currency.symbol, currency.quantity * currency.ask)
-		HitBtcApi.CreateOrders(keys, currency.symbol, "sell", currency.quantity, currency.quantity * currency.ask)
+		print("SELL ", currency.quantity, currency.symbol, currency.ask)
+		HitBtcApi.CreateOrders(keys, currency.symbol, "sell", currency.quantity, currency.ask)
+	Config.TradedCurrency.clear()
 
 def BuyCurrencys(keys):
-	currencys = Config.TradedCurrency
-	temp = []
-	for i in range(0, (Config.Quantity - len(Config.Balance))):
-		currency = currencys[i]
-		currency.quantity = math.trunc(Config.MaxPrice / currency.bid / currency.quantityIncrement) * currency.quantityIncrement
-		print("BUY ", currency.quantity, currency.symbol, currency.quantity * currency.bid)
-		HitBtcApi.CreateOrders(keys, currency.symbol, "buy", currency.quantity, currency.quantity * currency.bid)
-		temp.append(currency)
+	try:
+		currencys = Config.TradedCurrency
+		temp = []
+		maxIndex = min(Config.Quantity - len(Config.Balance), len(currencys))
+		for i in range(0, maxIndex):
+			currency = currencys[i]
+			currency.quantity = math.trunc(Config.MaxPrice / currency.bid / currency.quantityIncrement) * currency.quantityIncrement
+			print("BUY ", currency.quantity, currency.symbol, currency.bid)
+			HitBtcApi.CreateOrders(keys, currency.symbol, "buy", currency.quantity, currency.bid)
+			temp.append(currency)
 
-	Config.TradedCurrency = temp
+		Config.TradedCurrency = temp
+	except:
+		print("ERROR")

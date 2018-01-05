@@ -4,7 +4,7 @@ PublicKey = "***REMOVED***"
 SecretKey = "***REMOVED***"
 
 QuotedCurrency = 'USD' #Котируемая валюта
-Quantity = 5 #Колисчество валютных пар для торговли
+Quantity = 4 #Колисчество валютных пар для торговли
 Profit = Decimal(0.01) #необходимый навар (0.01 = 1%)
 StockFee = Decimal(0.01) #комиссия биржи (0.01 = 1%)
 Period = 60 #время для расчетов (1 = 1 мин)
