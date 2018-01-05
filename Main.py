@@ -14,16 +14,12 @@ def main():
 		Config.Balance = inf.GetNotZeroBalances(keys, Config.QuotedCurrency) #получение баланса всех валют, кроме котируемой
 		if len(Config.Balance) < Config.Quantity: 
 			Config.MainBalance = inf.GetMainBalance(keys, Config.QuotedCurrency) #получение баланса котируемой валюты
-			Config.MaxPrice = Config.MainBalance / (Config.Quantity - len(Config.Orders)) #расчет максимальной цены за валюту
+			Config.MaxPrice = Config.MainBalance / (Config.Quantity - len(Config.Balance)) #расчет максимальной цены за валюту
 			Config.TradedCurrency = GetInformations.GetTickers() #Получение всех валют на покупку
 			do.RemoveBadTradedCurrency() #удаление валют, не подходящих под условия отбора
 			do.RemoveCurencyFallingMarket() #удаление валют с падающим рынком
-
 			do.BuyCurrencys(keys)
-
-			t = Config.TradedCurrency
-			for currency in t:
-				print(currency.symbol, currency.rank)
+			print("MAIN BALANCE: ", Config.MainBalance)
 
 		time.sleep(Config.Sleep)
 

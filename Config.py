@@ -1,13 +1,15 @@
+from decimal import Decimal
+
 PublicKey = "***REMOVED***"
 SecretKey = "***REMOVED***"
 
 QuotedCurrency = 'USD' #Котируемая валюта
 Quantity = 5 #Колисчество валютных пар для торговли
-Profit = 0.01 #необходимый навар (0.01 = 1%)
-StockFee = 0.01 #комиссия биржи (0.01 = 1%)
+Profit = Decimal(0.01) #необходимый навар (0.01 = 1%)
+StockFee = Decimal(0.01) #комиссия биржи (0.01 = 1%)
 Period = 60 #время для расчетов (1 = 1 мин)
-Sleep = 10 #время ожидания бота (1 = 1 сек)
-MinRank = 1000 #минимальный ранг торгуемых валют
+Sleep = 120 #время ожидания бота (1 = 1 сек)
+MinRank = 2000 #минимальный ранг торгуемых валют
 
 #Private setings
 Balance = [] #Баланс
