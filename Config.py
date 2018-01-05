@@ -15,4 +15,4 @@ MainBalance = 0 #Баланс котируемой валюты
 MaxPrice = 0 #Максимальная цена
 TradedCurrency = [] #Валюты для торговли
 Orders = [] #Ордера ??
-Mask = '{"symbol": "text", "ask": 0, "bid": 0, "rank": 0, "quantityIncrement": 0}' #Объект валюты на продажу
+Mask = '{"symbol": "text", "ask": 0, "bid": 0, "rank": 0, "quantityIncrement": 0, "quantity": 0}' #Объект валюты на продажу

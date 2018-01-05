@@ -2,7 +2,7 @@ import HitBtcApi
 import Config
 import Logics
 from sklearn import linear_model
-from math import atan
+import math
 
 def SortedOrders(keys, orders):
 	currencys = Config.TradedCurrency
@@ -14,6 +14,7 @@ def SortedOrders(keys, orders):
 					purchasedCurrencies.remove(currency)
 					break
 			HitBtcApi.CancelOrders(keys, order['clientOrderId'])
+	Config.TradedCurrency = purchasedCurrencies
 
 def RemoveBadTradedCurrency():
 	currencys = Config.TradedCurrency
@@ -28,22 +29,27 @@ def RemoveCurencyFallingMarket():
 	goodCurrency = []
 	for currency in currencys:
 		candles = HitBtcApi.GetCandles(currency.symbol, Config.Period)
-		x = [[(float(candle['open']) + float(candle['close']))/2] for candle in candles]
-		y = [i for i in range(0, len(candles))]
+		y = [(float(candle['open']) + float(candle['close']))/2 for candle in candles]
+		x = [[i] for i in range(0, len(candles))]
 		regr = linear_model.LinearRegression()
 		regr.fit(x, y)
-		if (Logics.should_buy(candles)) or (atan(regr.score(x, y)) > 0.17):
+		if (Logics.should_buy(candles)) and ((math.atan(regr.coef_) > -0.001)):
 			goodCurrency.append(currency)
 	Config.TradedCurrency = goodCurrency
 
-#def RemovalAvailableCurrencies():
-#	orders = Config.orders
-#	currencys = Config.TradedCurrency
-#
-#	for currency in currencys:
-#		for order in orders:
-#			if currency.symbol == order['symbol']:
-#				currencys.remove(currency)
-#	Config.TradedCurrency = currency
+def SellCurrencys(keys):
+	currencys = Config.TradedCurrency
+	for currency in currencys:
+		print("SELL ", currency.symbol, currency.quantity, currency.quantity * currency.ask)
+		HitBtcApi.CreateOrders(keys, currency.symbol, "sell", currency.quantity, currency.quantity * currency.ask)
 
-#def SellCurrencys():
+def BuyCurrencys(keys):
+	currencys = Config.TradedCurrency
+	for i in range(0, (Config.Quantity - len(Config.Balance))):
+		currency = currencys[i]
+		currency.quantity = math.trunc((Config.MaxPrice / currency.bid) / currency.quantityIncrement) * currency.quantityIncrement
+		print("BUY ", currency.symbol, currency.quantity, currency.quantity * currency.ask)
+		HitBtcApi.CreateOrders(keys, currency.symbol, "buy", currency.quantity, currency.quantity * currency.ask)
+
+
+	Config.TradedCurrency = currencys
