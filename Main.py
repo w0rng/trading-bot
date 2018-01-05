@@ -15,11 +15,14 @@ def main():
 			Config.MainBalance = inf.GetMainBalance(keys, Config.QuotedCurrency) #получение баланса котируемой валюты
 			Config.MaxPrice = Config.MainBalance / (Config.Quantity - len(Config.Orders)) #расчет максимальной цены за валюту
 			Config.TradedCurrency = GetInformations.GetTickers() #Получение всех валют на покупку
-			do.SortCurrencyTraded() #Поиск валют для покупки
 			do.RemoveBadTradedCurrency() #удаление валют с падющим рынком
-			#do.RemovalAvailableCurrencies()
+			do.RemoveCurencyFallingMarket() #Поиск валют для покупки
 
-		time.sleep(Config.sleep)
+			t = Config.TradedCurrency
+			for currency in t:
+				print(currency.symbol, currency.rank)
+		print('______')
+		time.sleep(Config.Sleep)
 
 if __name__ == '__main__':
 	main()
