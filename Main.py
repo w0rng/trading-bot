@@ -8,6 +8,7 @@ inf = GetInformations
 keys = [Config.PublicKey, Config.SecretKey]
 
 def main():
+	print("RUN")
 	while True:
 		try:
 			do.SortedOrders(keys, inf.GetAllOrders(keys)) #Удаляем ордера на покупку, удаляем из массива не купленную валюту
@@ -20,7 +21,7 @@ def main():
 				do.RemoveBadTradedCurrency() #удаление валют, не подходящих под условия отбора
 				do.RemoveCurencyFallingMarket() #удаление валют с падающим рынком
 				do.BuyCurrencys(keys) #покупаем
-				print("MAIN BALANCE: ", Config.MainBalance)
+				print(time.strftime('%H:%M'), "MAIN BALANCE: ", Config.MainBalance)
 
 			time.sleep(Config.Sleep)
 		except:

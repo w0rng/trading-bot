@@ -4,6 +4,7 @@ import Logics
 from sklearn import linear_model
 import math
 from decimal import Decimal
+import time
 
 def SortedOrders(keys, orders):
 	try:
@@ -32,7 +33,6 @@ def RemoveBadTradedCurrency():
 		for currency in temp:
 			for b in balance:
 				if b['currency'] + Config.QuotedCurrency == currency.symbol:
-					print("REMOVE ", b['currency'] + Config.QuotedCurrency)
 					goodCurrency.remove(currency)
 					break
 		Config.TradedCurrency = goodCurrency
@@ -59,8 +59,9 @@ def SellCurrencys(keys):
 	try:
 		currencys = Config.TradedCurrency
 		for currency in currencys:
-			print("SELL ", currency.quantity, currency.symbol, currency.ask)
+			print(time.strftime('%H:%M'),"BUY ", currency.quantity, currency.symbol, currency.bid)
 			HitBtcApi.CreateOrders(keys, currency.symbol, "sell", currency.quantity, currency.ask)
+			print(time.strftime('%H:%M'),"SELL ", currency.quantity, currency.symbol, currency.ask)
 		Config.TradedCurrency.clear()
 	except:
 		print("ERROR SellCurrencys")
@@ -73,7 +74,6 @@ def BuyCurrencys(keys):
 		for i in range(0, maxIndex):
 			currency = currencys[i]
 			currency.quantity = math.trunc(Config.MaxPrice / currency.bid / currency.quantityIncrement) * currency.quantityIncrement
-			print("BUY ", currency.quantity, currency.symbol, currency.bid)
 			HitBtcApi.CreateOrders(keys, currency.symbol, "buy", currency.quantity, currency.bid)
 			temp.append(currency)
 
