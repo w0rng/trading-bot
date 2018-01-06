@@ -11,6 +11,10 @@ def SortedOrders(keys, orders):
 		purchasedCurrencies = currencys
 		for order in orders:
 			if order['side'] == 'buy':
+				for currency in currencys:
+					if currency.symbol == order['symbol']:
+						purchasedCurrencies.remove(currency)
+						break
 				HitBtcApi.CancelOrders(keys, order['clientOrderId'])
 		Config.TradedCurrency = purchasedCurrencies
 	except:
@@ -28,6 +32,7 @@ def RemoveBadTradedCurrency():
 		for currency in temp:
 			for b in balance:
 				if b['currency'] + Config.QuotedCurrency == currency.symbol:
+					print("REMOVE ", b['currency'] + Config.QuotedCurrency)
 					goodCurrency.remove(currency)
 					break
 		Config.TradedCurrency = goodCurrency

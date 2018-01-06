@@ -19,7 +19,7 @@ def main():
 				Config.TradedCurrency = GetInformations.GetTickers() #Получение всех валют на покупку
 				do.RemoveBadTradedCurrency() #удаление валют, не подходящих под условия отбора
 				do.RemoveCurencyFallingMarket() #удаление валют с падающим рынком
-				do.BuyCurrencys(keys)
+				do.BuyCurrencys(keys) #покупаем
 				print("MAIN BALANCE: ", Config.MainBalance)
 
 			time.sleep(Config.Sleep)
