@@ -6,52 +6,59 @@ import math
 from decimal import Decimal
 
 def SortedOrders(keys, orders):
-	currencys = Config.TradedCurrency
-	purchasedCurrencies = currencys
-	for order in orders:
-		if order['side'] == 'buy':
-			print(order['side'])
-			#for currency in currencys:
-			#	if currency.symbol == order['symbol']:
-			#		purchasedCurrencies.remove(currency)
-			#		break
-			HitBtcApi.CancelOrders(keys, order['clientOrderId'])
-	Config.TradedCurrency = purchasedCurrencies
+	try:
+		currencys = Config.TradedCurrency
+		purchasedCurrencies = currencys
+		for order in orders:
+			if order['side'] == 'buy':
+				HitBtcApi.CancelOrders(keys, order['clientOrderId'])
+		Config.TradedCurrency = purchasedCurrencies
+	except:
+		print("ERROR SortedOrders")
 
 def RemoveBadTradedCurrency():
-	currencys = Config.TradedCurrency
-	goodCurrency = []
-	for currency in currencys:
-		if (currency.rank >= Config.MinRank) and (currency.quantityIncrement <= (Config.MaxPrice / currency.bid)):
-			goodCurrency.append(currency)
-	balance = Config.Balance
-	temp = goodCurrency
-	for currency in temp:
-		for b in balance:
-			if b['currency'] + Config.QuotedCurrency == currency.symbol:
-				goodCurrency.remove(currency)
-				break
-	Config.TradedCurrency = goodCurrency
+	try:
+		currencys = Config.TradedCurrency
+		goodCurrency = []
+		for currency in currencys:
+			if (currency.rank >= Config.MinRank) and (currency.quantityIncrement <= (Config.MaxPrice / currency.bid)):
+				goodCurrency.append(currency)
+		balance = Config.Balance
+		temp = goodCurrency
+		for currency in temp:
+			for b in balance:
+				if b['currency'] + Config.QuotedCurrency == currency.symbol:
+					goodCurrency.remove(currency)
+					break
+		Config.TradedCurrency = goodCurrency
+	except:
+		print("ERROR RemoveBadTradedCurrency")
 
 def RemoveCurencyFallingMarket():
-	currencys = Config.TradedCurrency
-	goodCurrency = []
-	for currency in currencys:
-		candles = HitBtcApi.GetCandles(currency.symbol, Config.Period)
-		y = [(float(candle['open']) + float(candle['close']))/2 for candle in candles]
-		x = [[i] for i in range(0, len(candles))]
-		regr = linear_model.LinearRegression()
-		regr.fit(x, y)
-		if (Logics.should_buy(candles)) and (Decimal(math.atan(regr.coef_)) > Decimal(-0.001)):
-			goodCurrency.append(currency)
-	Config.TradedCurrency = goodCurrency
+	try:
+		currencys = Config.TradedCurrency
+		goodCurrency = []
+		for currency in currencys:
+			candles = HitBtcApi.GetCandles(currency.symbol, Config.Period)
+			y = [(float(candle['open']) + float(candle['close']))/2 for candle in candles]
+			x = [[i] for i in range(0, len(candles))]
+			regr = linear_model.LinearRegression()
+			regr.fit(x, y)
+			if (Logics.should_buy(candles)) and (Decimal(math.atan(regr.coef_)) > Decimal(-0.001)):
+				goodCurrency.append(currency)
+		Config.TradedCurrency = goodCurrency
+	except:
+		print("ERROR RemoveCurencyFallingMarket")
 
 def SellCurrencys(keys):
-	currencys = Config.TradedCurrency
-	for currency in currencys:
-		print("SELL ", currency.quantity, currency.symbol, currency.ask)
-		HitBtcApi.CreateOrders(keys, currency.symbol, "sell", currency.quantity, currency.ask)
-	Config.TradedCurrency.clear()
+	try:
+		currencys = Config.TradedCurrency
+		for currency in currencys:
+			print("SELL ", currency.quantity, currency.symbol, currency.ask)
+			HitBtcApi.CreateOrders(keys, currency.symbol, "sell", currency.quantity, currency.ask)
+		Config.TradedCurrency.clear()
+	except:
+		print("ERROR SellCurrencys")
 
 def BuyCurrencys(keys):
 	try:
@@ -67,4 +74,4 @@ def BuyCurrencys(keys):
 
 		Config.TradedCurrency = temp
 	except:
-		print("ERROR")
+		print("ERROR BuyCurrencys")
