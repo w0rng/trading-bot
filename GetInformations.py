@@ -33,7 +33,7 @@ def GetTickers():
 		Traded = []
 		for Ticker in AllTicker:
 			if ((Ticker['bid'] != None) and
-			(Decimal(Ticker['bid']) + Decimal(Ticker['bid']) * (Config.StockFee * 2 + Config.Profit)) >= Decimal(Ticker['ask']) and
+			(Decimal(Ticker['bid']) + Decimal(Ticker['bid']) * (Config.StockFee + Config.Profit)) >= (Decimal(Ticker['ask']) + Decimal(Ticker['ask']) * Config.StockFee) and
 			(Ticker['symbol'].find(Config.QuotedCurrency) != -1)):
 				ask = Decimal(Ticker['ask'])
 				bid = Decimal(Ticker['bid'])

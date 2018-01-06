@@ -11,7 +11,7 @@ def SortedOrders(keys, orders):
 		currencys = Config.TradedCurrency
 		purchasedCurrencies = currencys
 		for order in orders:
-			if order['side'] == 'buy':
+			if (order['side'] == 'buy') and (order['status'] == 'new'):
 				for currency in currencys:
 					if currency.symbol == order['symbol']:
 						purchasedCurrencies.remove(currency)
@@ -59,9 +59,12 @@ def SellCurrencys(keys):
 	try:
 		currencys = Config.TradedCurrency
 		for currency in currencys:
-			print(time.strftime('%H:%M'),"BUY ", currency.quantity, currency.symbol, currency.bid)
+			print("\033[92m",time.strftime('%H:%M'),"BUY ", currency.quantity, currency.symbol, currency.bid * currency.quantity,"\033[0m")
 			HitBtcApi.CreateOrders(keys, currency.symbol, "sell", currency.quantity, currency.ask)
-			print(time.strftime('%H:%M'),"SELL ", currency.quantity, currency.symbol, currency.ask)
+			print("\033[91m",time.strftime('%H:%M'),"SELL ", currency.quantity, currency.symbol, currency.ask * currency.quantity,"\033[0m")
+			profit = (currency.ask * currency.quantity - currency.bid * currency.quantity)
+			StockFee = currency.ask * currency.quantity * Config.StockFee + currency.bid * currency.quantity * Config.StockFee
+			print("\033[96m+", profit-StockFee, "\033[0m")
 		Config.TradedCurrency.clear()
 	except:
 		print("ERROR SellCurrencys")
