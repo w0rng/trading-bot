@@ -26,7 +26,7 @@ def main():
 			time.sleep(Config.Sleep)
 		except:
 			print("ERROR main")
-			time.sleep(Config.Sleep*10)
+			time.sleep(Config.Sleep*5)
 
 if __name__ == '__main__':
 	main()
