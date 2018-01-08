@@ -2,6 +2,7 @@ import Config
 import GetInformations
 import do
 import time
+import sys
 
 maxPrice = 0
 inf = GetInformations
@@ -19,14 +20,15 @@ def main():
 				Config.MaxPrice = Config.MainBalance / (Config.Quantity - len(Config.Balance)) #расчет максимальной цены за валюту
 				Config.TradedCurrency = GetInformations.GetTickers() #Получение всех валют на покупку
 				do.RemoveBadTradedCurrency() #удаление валют, не подходящих под условия отбора
-				do.RemoveCurencyFallingMarket() #удаление валют с падающим рынком
+				do.RemoveBadMarketCurency() #удаление валют с падающим рынком
 				do.BuyCurrencys(keys) #покупаем
 				print(time.strftime('%H:%M'), "MAIN BALANCE: ", Config.MainBalance)
 
 			time.sleep(Config.Sleep)
 		except:
 			print("ERROR main")
-			time.sleep(Config.Sleep*5)
+			print(sys.exc_info()[1].args[0])
+			time.sleep(Config.Sleep)
 
 if __name__ == '__main__':
 	main()

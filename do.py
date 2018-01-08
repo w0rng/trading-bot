@@ -1,10 +1,10 @@
 import HitBtcApi
 import Config
 import Logics
-from sklearn import linear_model
+import numpy as np
 import math
-from decimal import Decimal
 import time
+import sys
 
 def SortedOrders(keys, orders):
 	try:
@@ -20,6 +20,7 @@ def SortedOrders(keys, orders):
 		Config.TradedCurrency = purchasedCurrencies
 	except:
 		print("ERROR SortedOrders")
+		print(sys.exc_info()[1].args[0])
 
 def RemoveBadTradedCurrency():
 	try:
@@ -38,22 +39,34 @@ def RemoveBadTradedCurrency():
 		Config.TradedCurrency = goodCurrency
 	except:
 		print("ERROR RemoveBadTradedCurrency")
+		print(sys.exc_info()[1].args[0])
 
-def RemoveCurencyFallingMarket():
+def RemoveBadMarketCurency():
 	try:
 		currencys = Config.TradedCurrency
 		goodCurrency = []
 		for currency in currencys:
 			candles = HitBtcApi.GetCandles(currency.symbol, Config.Period)
+
 			y = [(float(candle['open']) + float(candle['close']))/2 for candle in candles]
-			x = [[i] for i in range(0, len(candles))]
-			regr = linear_model.LinearRegression()
-			regr.fit(x, y)
-			if (Logics.should_buy(candles)) and (Decimal(math.atan(regr.coef_)) > Decimal(-0.001)):
-				goodCurrency.append(currency)
+			x = range(0, len(candles))
+
+			fit = np.polyfit(x,y,1)
+			fit_fn = np.poly1d(fit)
+			Degree = math.degrees(math.atan(fit_fn[1]))
+
+			if (Logics.should_buy(candles)) and (Degree >= Config.MinDegree) and (Degree <= Config.MaxDegree):
+				minY = min(y)
+				r = fit_fn(x)[y.index(minY)] - minY
+				r -= r * 0.1
+				minPrice = float(fit_fn(x)[len(x) - 1] - r)
+				
+				if currency.ask >= minPrice:
+					goodCurrency.append(currency)
 		Config.TradedCurrency = goodCurrency
 	except:
-		print("ERROR RemoveCurencyFallingMarket")
+		print("ERROR RemoveCurencyBadMarket")
+		print(sys.exc_info()[1].args[0])
 
 def SellCurrencys(keys):
 	try:
@@ -68,6 +81,7 @@ def SellCurrencys(keys):
 		Config.TradedCurrency.clear()
 	except:
 		print("ERROR SellCurrencys")
+		print(sys.exc_info()[1].args[0])
 
 def BuyCurrencys(keys):
 	try:
@@ -83,3 +97,4 @@ def BuyCurrencys(keys):
 		Config.TradedCurrency = temp
 	except:
 		print("ERROR BuyCurrencys")
+		print(sys.exc_info()[1].args[0])

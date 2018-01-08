@@ -2,16 +2,17 @@ import HitBtcApi
 import Config
 import json
 from types import SimpleNamespace as Namespace
-from decimal import Decimal
+import sys
 
 def GetMainBalance(keys, quotedCurrency):
 	try:
 		balances = HitBtcApi.GetBalance(keys, quotedCurrency)
 		for balance in balances:
 			if balance['currency'] == quotedCurrency:
-				return Decimal(balance['available'])
+				return float(balance['available'])
 	except:
 		print("ERROR GetMainBalance")
+		print(sys.exc_info()[1].args[0])
 
 def GetNotZeroBalances(keys, quotedCurrency):
 	try:
@@ -23,6 +24,7 @@ def GetNotZeroBalances(keys, quotedCurrency):
 		return notZeroBalance
 	except:
 		print("ERROR GetNotZeroBalances")
+		print(sys.exc_info()[1].args[0])
 
 def GetAllOrders(keys):
 	return HitBtcApi.GetOrders(keys)
@@ -33,11 +35,11 @@ def GetTickers():
 		Traded = []
 		for Ticker in AllTicker:
 			if ((Ticker['bid'] != None) and
-			(Decimal(Ticker['bid']) + Decimal(Ticker['bid']) * (Config.StockFee + Config.Profit)) >= (Decimal(Ticker['ask']) + Decimal(Ticker['ask']) * Config.StockFee) and
+			((float(Ticker['ask']) + float(Ticker['ask']) * (Config.StockFee + Config.Profit) >= float(Ticker['bid']) + float(Ticker['bid']) * Config.StockFee)) and
 			(Ticker['symbol'].find(Config.QuotedCurrency) != -1)):
-				ask = Decimal(Ticker['ask'])
-				bid = Decimal(Ticker['bid'])
-				volume = Decimal(Ticker['volume'])
+				ask = float(Ticker['ask'])
+				bid = float(Ticker['bid'])
+				volume = float(Ticker['volume'])
 				rank = ((ask - bid)/bid)*volume
 
 				temp = json.loads(Config.Mask, object_hook=lambda d: Namespace(**d))
@@ -45,10 +47,11 @@ def GetTickers():
 				temp.ask = ask
 				temp.bid = bid
 				temp.rank = rank
-				temp.quantityIncrement = Decimal(HitBtcApi.GetInfoSumbols(temp.symbol)['quantityIncrement'])
+				temp.quantityIncrement = float(HitBtcApi.GetInfoSumbols(temp.symbol)['quantityIncrement'])
 				Traded.append(temp)
 
 		Traded.sort(reverse=True, key=lambda t: t.rank)
 		return Traded
 	except:
 		print("ERROR GetTickers")
+		print(sys.exc_info()[1].args[0])
