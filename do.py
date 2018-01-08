@@ -60,8 +60,13 @@ def RemoveBadMarketCurency():
 				r = fit_fn(x)[y.index(minY)] - minY
 				r -= r * 0.1
 				minPrice = float(fit_fn(x)[len(x) - 1] - r)
+
+				maxY = max(y)
+				r = fit_fn(x)[y.index(maxY)] - maxY
+				r -= r * 0.1
+				maxPrice = float(fit_fn(x)[len(x) - 1] - r)
 				
-				if currency.ask >= minPrice:
+				if (currency.ask >= minPrice) and (currency.ask <= maxPrice):
 					goodCurrency.append(currency)
 		Config.TradedCurrency = goodCurrency
 	except:
