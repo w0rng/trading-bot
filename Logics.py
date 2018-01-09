@@ -31,13 +31,13 @@ def should_buy(Candles):
         perc = curr_v/max_v
         
         if((macd[offset] > macdsignal[offset] and perc*100 > BULL_PERC) # восходящий тренд
-        or (macd[offset] < macdsignal[offset] and perc*100 < (100-BEAR_PERC))):
+        | (macd[offset] < macdsignal[offset] and perc*100 < 100-BEAR_PERC)):
             v = 1
             activity_time = True
         else:
             v = 0
             
-        if offset in idx and not numpy.isnan(elem):
+        if offset in idx & (not numpy.isnan(elem)):
             # тренд изменился
             max_v = curr_v = 0 # обнуляем пик спреда между линиями
         hist_data.append(v*1000)

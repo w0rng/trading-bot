@@ -13,7 +13,6 @@ MaxDegree = 180 #максимальный градус рынка, при кот
 
 #Private setings
 Balance = [] #Баланс
-MainBalance = 0 #Баланс котируемой валюты
 MaxPrice = 0 #Максимальная цена
 TradedCurrency = [] #Валюты для торговли
 Orders = [] #Ордера ??
