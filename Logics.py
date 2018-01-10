@@ -1,8 +1,6 @@
 import numpy
 import talib
-
-BEAR_PERC = 95
-BULL_PERC = 30
+from Config import BULL_PERC, BEAR_PERC
 
 def should_buy(Candles):
     data = Candles

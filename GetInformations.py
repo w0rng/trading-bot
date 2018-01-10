@@ -4,21 +4,20 @@ import sys
 
 def GetBalance(keys):
 	_balances = HitBtcApi.GetBalance(keys, Config.QuotedCurrency)
-	main = 0
-	balances = {}
 	for balance in _balances:
-		if balance['currency'] == Config.QuotedCurrency:
+		available = float(balance['available'])
+		currency = float(balance['currency'])
+		if currency == Config.QuotedCurrency:
 			Config.MainBalance = float(balance['available'])
-		elif (balance['available'] != '0') | (balance['reserved'] != '0'):
-			Config.Balance[balance['currency']] = {'available': balance['available'], 'reserved': balance['reserved']}
-	return(main, balances)
+		elif currency | available:
+			Config.Balance.update({balance['currency']})
 
 def GetTickers():
 	try:
 		AllTicker = HitBtcApi.GetTickers()
 		Traded = {}
 		for Ticker in AllTicker:
-			if (Ticker['bid'] == None) | (Ticker['symbol'].find(Config.QuotedCurrency) == -1):
+			if Ticker['bid'] | (Config.QuotedCurrency in Ticker['symbol']):
 				continue
 			
 			symbol = Ticker['symbol']

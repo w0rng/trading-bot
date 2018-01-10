@@ -48,12 +48,9 @@ def RemoveBadMarkets():
 				Config.TradedCurrency.pop(key)
 
 def Chopping():
-	i = Config.Quantity - len(Config.Balance)
-	for key in list(Config.TradedCurrency):
-		if i < Config.Quantity:
-			i += 1
-		else:
-			Config.TradedCurrency.pop(key)
+	n = Config.Quantity - len(Config.Balance)
+	currencys = Config.TradedCurrency
+	Config.TradedCurrency = {key: currencys[key] for key in list(currencys) if list(currencys).index(key) < n}
 
 def SellCurrencys(keys):
 	for key in Config.TradedCurrency.copy().keys():
