@@ -1,26 +1,22 @@
 import HitBtcApi
 import Config
-from Currency import Currency
 import sys
 
-def GetBalance(keys, quotedCurrency):
-	_balances = HitBtcApi.GetBalance(keys, quotedCurrency)
+def GetBalance(keys):
+	_balances = HitBtcApi.GetBalance(keys, Config.QuotedCurrency)
 	main = 0
-	balances = []
+	balances = {}
 	for balance in _balances:
-		if balance['currency'] == quotedCurrency:
-			main = float(balance['available'])
+		if balance['currency'] == Config.QuotedCurrency:
+			Config.MainBalance = float(balance['available'])
 		elif (balance['available'] != '0') | (balance['reserved'] != '0'):
-			balances.append(balance)
+			Config.Balance[balance['currency']] = {'available': balance['available'], 'reserved': balance['reserved']}
 	return(main, balances)
-
-def GetAllOrders(keys):
-	return HitBtcApi.GetOrders(keys)
 
 def GetTickers():
 	try:
 		AllTicker = HitBtcApi.GetTickers()
-		Traded = []
+		Traded = {}
 		for Ticker in AllTicker:
 			if (Ticker['bid'] == None) | (Ticker['symbol'].find(Config.QuotedCurrency) == -1):
 				continue
@@ -35,10 +31,9 @@ def GetTickers():
 			if (askPrice > bidPrice):
 				rank = ((ask - bid)/bid)*float(Ticker['volume'])
 				quantityIncrement = float(HitBtcApi.GetInfoSumbols(symbol)['quantityIncrement'])
-				Traded.append(Currency(Ticker['symbol'], ask, bid, rank, quantityIncrement))
+				Traded[symbol] = {'ask': ask, 'bid': bid, 'rank': rank, 'quantityIncrement':quantityIncrement}
 
-		Traded.sort(reverse=True, key=lambda t: t.rank)
-		return Traded
+		Config.TradedCurrency = dict(sorted(Traded.items(), key=lambda t: t[1]['rank'], reverse=True))
 	except:
 		print("ERROR GetTickers")
 		print(sys.exc_info()[1].args[0])
