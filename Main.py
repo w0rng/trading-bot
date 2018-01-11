@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 import Config
 import GetInformations
 import do
@@ -12,7 +14,7 @@ def main():
 		do.SellCurrencys(keys)
 		GetInformations.GetBalance(keys)
 		if len(Config.Balance) < Config.Quantity:
-			Config.MaxPrice = Config.MainBalance / (Config.Quantity - len(Config.Balance))
+			Config.MaxPrice = Decimal(Config.MainBalance / (Config.Quantity - len(Config.Balance)))
 			GetInformations.GetTickers()
 			do.RemoveBadCurrencys()
 			do.RemoveBadMarkets()
