@@ -3,6 +3,7 @@ import HitBtcApi
 import Config
 import numpy as np
 import math
+import Logics
 import time
 
 def SortedOrders(keys):
@@ -29,12 +30,14 @@ def RemoveBadMarkets():
 		currency = Config.TradedCurrency[key]
 		candles = HitBtcApi.GetCandles(key, Config.Period)
 		try:
-			y = [(float(candle['open']) + float(candle['close']))/2 for candle in candles]
-			x = range(len(candles))
+			x = range(1, len(candles) + 1)
+			ty = [(float(candle['open']) + float(candle['close']))/2 for candle in candles]
+			k = max(x) / max(ty)
+			y = [ty[i]*k for i in range(len(candles))]
 
 			fit = np.polyfit(x,y,1)
 			fit_fn = np.poly1d(fit)
-			degree = math.degrees(math.atan(fit_fn[1]))
+			degree = math.degrees(math.atan(fit_fn[1])) * 10
 
 			#Logics.should_buy(candles) &
 			if (degree >= Config.MinDegree) & (degree <= Config.MaxDegree):
