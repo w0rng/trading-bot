@@ -1,5 +1,4 @@
 from decimal import Decimal
-
 import Config
 import GetInformations
 import do

@@ -3,18 +3,16 @@ import HitBtcApi
 import Config
 import numpy as np
 import math
-import Logics
 import time
 
 def SortedOrders(keys):
 	orders = HitBtcApi.GetOrders(keys)
 	for order in orders:
-		if (order['side'] == 'buy'):
-			if (order['symbol'] in Config.TradedCurrency) & (order['status'] == 'new'):
+		if (order['side'] == 'buy') & (order['symbol'] in Config.TradedCurrency):
+			if order['status'] == 'new':
 				Config.TradedCurrency.pop(order['symbol'])
-			elif (order['status'] == 'partiallyFilled'):
+			elif order['status'] == 'partiallyFilled':
 				Config.TradedCurrency[order['symbol']]['quantity'] = Decimal(order['cumQuantity'])
-				Config.TradedCurrency.pop(order['symbol'])
 			HitBtcApi.CancelOrders(keys, order['clientOrderId'])
 
 def RemoveBadCurrencys():
@@ -65,7 +63,7 @@ def SellCurrencys(keys):
 	for key in list(Config.TradedCurrency):
 		currency = Config.TradedCurrency[key]
 		informations(key, currency)
-		HitBtcApi.CreateOrders(keys, key, "sell", currency['quantity'], currency['ask'])
+		print(HitBtcApi.CreateOrders(keys, key, "sell", currency['quantity'], currency['ask']))
 	Config.TradedCurrency.clear()
 
 def BuyCurrencys(keys):
@@ -77,7 +75,7 @@ def BuyCurrencys(keys):
 def informations(key, currency):
 	print("\033[92m",time.strftime('%H:%M'),"BUY ", currency['quantity'], key, currency['bid'] * currency['quantity'],"\033[0m")
 	print("\033[91m",time.strftime('%H:%M'),"SELL ", currency['quantity'], key, currency['ask'] * currency['quantity'],"\033[0m")
-	askPrice = currency['ask'] - currency['ask'] * Config.StockFee
-	bidPrice =  currency['bid'] + currency['bid'] * Config.StockFee
+	askPrice = (currency['ask'] - currency['ask'] * Config.StockFee) * currency['quantity']
+	bidPrice = (currency['bid'] + currency['bid'] * Config.StockFee) * currency['quantity']
 	profit = (askPrice - bidPrice)/bidPrice
 	print("\033[96m+", profit, "\033[0m")
