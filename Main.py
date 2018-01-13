@@ -1,27 +1,28 @@
+from time import sleep
 from decimal import Decimal
-import Config
-import GetInformations
-import do
-import time
+from API.HitBtcApi import HitBtcAPI
+import System.Accomplish as Accomplish
+import System.Sortings as Sortings
 
-keys = [Config.PublicKey, Config.SecretKey]
 
-def main():
-	print("RUN")
-	while True:
-		do.SortedOrders(keys)
-		do.SellCurrencys(keys)
-		GetInformations.GetBalance(keys)
-		if len(Config.Balance) < Config.Quantity:
-			Config.MaxPrice = Decimal(Config.MainBalance / (Config.Quantity - len(Config.Balance)))
-			GetInformations.GetTickers()
-			do.RemoveBadCurrencys()
-			do.RemoveBadMarkets()
-			do.Chopping()
-			do.BuyCurrencys(keys)
-			print(time.strftime('%H:%M'), "MAIN BALANCE: ", Config.MainBalance)
+config = Accomplish.GetConfig('HitBtc')
+api = HitBtcAPI(config['PublicKey'], config['SecretKey'])
+TradedCurrency = {}
 
-		time.sleep(Config.Sleep)
 
-if __name__ == '__main__':
-	main()
+while True:
+    TradedCurrency = Sortings.SortedOrders(TradedCurrency, api, config)
+    TradedCurrency = Accomplish.SellCurrencys(TradedCurrency, api.CreateOrders)
+    MainBalance, Balance = Accomplish.GetBalance(
+        api.GetBalance, config['QuotedCurrency'])
+    if len(Balance) < config['Quantity']:
+        MaxPrice = Decimal(MainBalance / (config['Quantity']-len(Balance)))
+        TradedCurrency = Accomplish.GetTickers(api, config, MaxPrice)
+        TradedCurrency = Sortings.RemoveBadCurrencys(
+            TradedCurrency, Balance, config)
+        TradedCurrency = Sortings.RemoveBadMarkets(TradedCurrency, config, api)
+        TradedCurrency = Sortings.Chopping(
+            TradedCurrency, Balance, config['Quantity'])
+        TradedCurrency = Accomplish.BuyCurrencys(
+            TradedCurrency, MaxPrice, api.CreateOrders)
+    sleep(config['Sleep'])
