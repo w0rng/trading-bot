@@ -49,6 +49,7 @@ class HitBtcAPI:
 
     @ConvertFloatToDecimal
     def GetCandles(self, symbol, limit):
+        limit = float(limit)
         return self.session.get(
             self.UrlAPI %
             'public/candles/%s?limit=%s&period=M1' %

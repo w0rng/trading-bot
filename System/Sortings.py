@@ -1,9 +1,10 @@
-import numpy as np
-from decimal import Decimal
 import math
-from datetime import datetime
 import time
+from datetime import datetime
+from decimal import Decimal
 from itertools import islice
+
+import numpy as np
 
 
 def RemoveBuyOrder(order, CancelOrders):
@@ -111,20 +112,19 @@ def RemoveBadMarkets(TradedCurrency, config, api):
         degree, minPrice, maxPrice = informations
         currency = TradedCurrency[key]
 
-        if (degree < config["MinDegree"]) or \
-            (degree > config["MaxDegree"]) or \
-            (currency['ask'] < minPrice) or \
-                (currency['ask'] > maxPrice):
+        if (degree < config["MinDegree"]) or (degree > config["MaxDegree"]):
+            TradedCurrency.pop(key)
+        elif (currency['ask'] < minPrice) or (currency['ask'] > maxPrice):
             TradedCurrency.pop(key)
 
     return TradedCurrency
 
 
 def Chopping(TradedCurrency, Balance, Quantity):
-    TradedCurrency = \
-        dict(sorted(TradedCurrency.items(), key=lambda t: t[1]['rank']))
+    TradedCurrency = dict(
+        sorted(TradedCurrency.items(), key=lambda t: t[1]['rank']))
     n = Quantity - len(Balance)
     if TradedCurrency:
-        return dict(islice(TradedCurrency.items(), n))
+        return TradedCurrency.items()[:n]
     else:
         return {}
