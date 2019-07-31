@@ -82,7 +82,6 @@ def BuyCurrencys(TradedCurrency, MaxPrice, CreateOrders):
                 currency['quantityIncrement']) * \
             currency['quantityIncrement']
         CreateOrders(key, "buy", quantity, currency['bid'])
-        print("buy", quantity,  currency['bid'])
     return {}
 
 
@@ -90,5 +89,4 @@ def SellCurrencys(TradedCurrency, CreateOrders):
     for key in list(TradedCurrency):
         currency = TradedCurrency[key]
         CreateOrders(key, "sell", currency['quantity'], currency['ask'])
-        print("sell", currency['quantity'], currency['ask'])
     return {}

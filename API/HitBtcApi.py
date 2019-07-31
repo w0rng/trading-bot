@@ -24,15 +24,14 @@ class HitBtcAPI:
     @ConvertFloatToDecimal
     def CreateOrders(self, symbol, side, quantity, price):
         print(side, quantity, symbol, price)
-        '''
+
         orderData = {
-                    'symbol': symbol,
-                    'side': side,
-                    'quantity': quantity,
-                    'price': price
-                    }
+            'symbol': symbol,
+            'side': side,
+            'quantity': quantity,
+            'price': price
+        }
         return self.session.post(self.UrlAPI % 'order', data=orderData).json()
-        '''
 
     @ConvertFloatToDecimal
     def GetTickers(self):

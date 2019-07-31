@@ -123,8 +123,9 @@ def RemoveBadMarkets(TradedCurrency, config, api):
 def Chopping(TradedCurrency, Balance, Quantity):
     TradedCurrency = dict(
         sorted(TradedCurrency.items(), key=lambda t: t[1]['rank']))
-    n = Quantity - len(Balance)
+    n = int(Quantity - len(Balance))
     if TradedCurrency:
-        return TradedCurrency.items()[:n]
+        return {key: TradedCurrency[key]
+                for key in list(TradedCurrency.keys())[:n]}
     else:
         return {}
