@@ -1,4 +1,5 @@
 import requests
+import datetime
 from System.Technical import ConvertFloatToDecimal
 
 
@@ -23,7 +24,8 @@ class HitBtcAPI:
 
     @ConvertFloatToDecimal
     def CreateOrders(self, symbol, side, quantity, price):
-        print(side, quantity, symbol, price)
+        print(datetime.datetime.now().strftime("%d-%m-%Y %H:%M"),
+              side, quantity, symbol, price)
 
         orderData = {
             'symbol': symbol,
