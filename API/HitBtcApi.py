@@ -1,6 +1,6 @@
 import requests
 import datetime
-from System.Technical import ConvertFloatToDecimal
+from System.Technical import convert_float_to_decimal
 
 
 class HitBtcAPI:
@@ -9,20 +9,20 @@ class HitBtcAPI:
         self.UrlAPI = "https://api.hitbtc.com/api/2/%s"
         self.session.auth = (publicKey, secretKey)
 
-    @ConvertFloatToDecimal
+    @convert_float_to_decimal
     def GetBalance(self, quotedCurrency):
         return self.session.get(self.UrlAPI % 'trading/balance').json()
 
-    @ConvertFloatToDecimal
+    @convert_float_to_decimal
     def GetOrders(self):
         return self.session.get(self.UrlAPI % 'order').json()
 
-    @ConvertFloatToDecimal
+    @convert_float_to_decimal
     def CancelOrders(self, clientOrderId):
         return self.session.delete(
             self.UrlAPI % 'order/%s' % clientOrderId).json()
 
-    @ConvertFloatToDecimal
+    @convert_float_to_decimal
     def CreateOrders(self, symbol, side, quantity, price):
         print(datetime.datetime.now().strftime("%d-%m-%Y %H:%M"),
               side, quantity, symbol, price)
@@ -35,20 +35,20 @@ class HitBtcAPI:
         }
         return self.session.post(self.UrlAPI % 'order', data=orderData).json()
 
-    @ConvertFloatToDecimal
+    @convert_float_to_decimal
     def GetTickers(self):
         return self.session.get(self.UrlAPI % 'public/ticker').json()
 
-    @ConvertFloatToDecimal
+    @convert_float_to_decimal
     def GetTicker(self, symbol):
         return self.session.get(self.UrlAPI % 'public/ticker/'+symbol).json()
 
-    @ConvertFloatToDecimal
+    @convert_float_to_decimal
     def GetInfoSumbols(self, symbol):
         return self.session.get(
             self.UrlAPI % 'public/symbol/%s' % symbol).json()
 
-    @ConvertFloatToDecimal
+    @convert_float_to_decimal
     def GetCandles(self, symbol, limit):
         limit = float(limit)
         return self.session.get(

@@ -1,92 +1,93 @@
 import math
 import json
-from System.Technical import ConvertFloatToDecimal
+from System.Technical import convert_float_to_decimal
 
 
-@ConvertFloatToDecimal
-def GetConfig(configName):
-    file = open('Configs/%s.conf' % configName)
+@convert_float_to_decimal
+def get_config(config_name):
+    file = open('Configs/%s.conf' % config_name)
     config = json.load(file)
     file.close()
     return config
 
 
-def GetBalance(GetBalance, QuotedCurrency):
-    Accounts = GetBalance(QuotedCurrency)
-    Balance = {}
-    MainBalance = 0
-    for balance in Accounts:
-        if balance['currency'] == QuotedCurrency:
-            MainBalance = balance['available']
+def get_balance(get_balance, quoted_currency):
+    accounts = get_balance(quoted_currency)
+    other_balance = {}
+    main_balance = 0
+    for balance in accounts:
+        if balance['currency'] == quoted_currency:
+            main_balance = balance['available']
         elif balance['reserved'] or balance['available']:
-            Balance.update(
+            other_balance.update(
                 {
                     balance['currency']:
                         (balance['reserved'], balance['available'])
                 })
-    return MainBalance, Balance
+    return main_balance, other_balance
 
 
-def checkPriceCyrrency(ask, bid, config):
+def check_price_currency(ask, bid, config):
     if not (ask and bid):
         return False
-    askPrice = ask - ask*config['StockFee']
-    bidPrice = bid + bid*config['StockFee']
-    profit = (askPrice-bidPrice) / bidPrice * 100
+    ask_price = ask - ask*config['StockFee']
+    bid_price = bid + bid*config['StockFee']
+    profit = (ask_price-bid_price) / bid_price * 100
     return (profit >= config['Profit']) and (bid >= config['MinPrice'])
 
 
-def generateInfoSymbol(symbol, ask, bid, volume, api, config, MaxPrice):
+def generate_info_symbol(symbol, ask, bid, volume, api, config, max_price):
     rank = (ask-bid) / bid*volume
     if rank >= config["MinRank"]:
-        quantityIncrement = api.GetInfoSumbols(symbol)['quantityIncrement']
-        if quantityIncrement <= (MaxPrice/bid):
+        quantity_increment = api.GetInfoSumbols(symbol)['quantityIncrement']
+        if quantity_increment <= (max_price / bid):
             return {
                 'ask': ask,
                 'bid': bid,
                 'rank': rank,
-                'quantityIncrement': quantityIncrement
+                'quantityIncrement': quantity_increment
             }
 
 
-def GetTickers(api, config, MaxPrice):
-    AllTicker = api.GetTickers()
-    Traded = {}
-    for Ticker in AllTicker:
+def get_tickers(api, config, max_price):
+    all_ticker = api.GetTickers()
+    traded = {}
+    for Ticker in all_ticker:
         if (Ticker['bid'] is None) or \
                 (config['QuotedCurrency'] not in Ticker['symbol']):
             continue
         symbol = Ticker['symbol']
         ask = Ticker['ask']
         bid = Ticker['bid']
-        if checkPriceCyrrency(ask, bid, config):
-            Traded[symbol] = generateInfoSymbol(
+        if check_price_currency(ask, bid, config):
+            traded[symbol] = generate_info_symbol(
                 symbol,
                 ask,
                 bid,
                 Ticker['volume'],
                 api,
                 config,
-                MaxPrice
+                max_price
             )
-    return Traded
+    return traded
 
 
-def BuyCurrencys(TradedCurrency, MaxPrice, CreateOrders):
-    for key in list(TradedCurrency):
-        currency = TradedCurrency[key]
+def buy_currency(traded_currency, max_price, create_orders):
+    for key in list(traded_currency):
+        currency = traded_currency[key]
         quantity = \
             math.trunc(
-                MaxPrice /
+                max_price /
                 currency['bid'] /
                 currency['quantityIncrement']) * \
             currency['quantityIncrement']
-        CreateOrders(key, "buy", quantity, currency['bid'])
+        create_orders(key, "buy", quantity, currency['bid'])
     return {}
 
 
-def SellCurrencys(TradedCurrency, CreateOrders):
-    for key in list(TradedCurrency):
-        currency = TradedCurrency[key]
-        CreateOrders(key, "sell", currency['quantity'], currency['ask'])
+def sell_currency(traded_currency, create_orders):
+    for key in list(traded_currency):
+        currency = traded_currency[key]
+        print(currency)
+        create_orders(key, "sell", currency['quantity'], currency['ask'])
     return {}
